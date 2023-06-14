@@ -64,40 +64,7 @@ esphome run esp32-example.yaml
 
 ## Example response all sensors enabled
 
-```
-[D][uart_debug:114]: >>> DD:A5:03:00:FF:FD:77
-[D][uart_debug:114]: <<< DD:03:00:1D:06:0B:00:00:01:ED:01:F4:00:00:2C:7C:00:00:00:00:10:00:80:63:02:04:03:0B:A0:0B:9D:0B:98:FA:55:77
-[D][sensor:124]: 'jbd-bms-uart total voltage': Sending state 15.47000 V with 2 decimals of accuracy
-[D][sensor:124]: 'jbd-bms-uart current': Sending state 0.00000 A with 1 decimals of accuracy
-[D][sensor:124]: 'jbd-bms-uart power': Sending state 0.00000 W with 1 decimals of accuracy
-[D][sensor:124]: 'jbd-bms-uart capacity remaining': Sending state 4.93000 Ah with 2 decimals of accuracy
-[D][sensor:124]: 'jbd-bms-uart nominal capacity': Sending state 5.00000 Ah with 2 decimals of accuracy
-[D][sensor:124]: 'jbd-bms-uart charging cycles': Sending state 0.00000  with 0 decimals of accuracy
-[I][jbd_bms:243]:   Date of manufacture: 2022.3.28
-[D][sensor:124]: 'jbd-bms-uart balancer status bitmask': Sending state 0.00000  with 0 decimals of accuracy
-[D][sensor:124]: 'jbd-bms-uart errors bitmask': Sending state 4096.00000  with 0 decimals of accuracy
-[D][text_sensor:067]: 'jbd-bms-uart errors': Sending state 'Mosfet Software Lock'
-[D][sensor:124]: 'jbd-bms-uart software version': Sending state 8.00000  with 1 decimals of accuracy
-[D][sensor:124]: 'jbd-bms-uart state of charge': Sending state 99.00000 % with 0 decimals of accuracy
-[D][sensor:124]: 'jbd-bms-uart operation status bitmask': Sending state 2.00000  with 0 decimals of accuracy
-[D][sensor:124]: 'jbd-bms-uart battery strings': Sending state 4.00000  with 0 decimals of accuracy
-[D][sensor:124]: 'jbd-bms-uart temperature 1': Sending state 24.50000 °C with 1 decimals of accuracy
-[D][sensor:124]: 'jbd-bms-uart temperature 2': Sending state 24.20000 °C with 1 decimals of accuracy
-[D][sensor:124]: 'jbd-bms-uart temperature 3': Sending state 23.70000 °C with 1 decimals of accuracy
-[D][uart_debug:114]: >>> DD:A5:04:00:FF:FC:77
-[D][uart_debug:114]: <<< DD:04:00:08:0F:23:0F:1C:0F:12:0F:1D:FF:4E:77
-[D][sensor:124]: 'jbd-bms-uart cell voltage 1': Sending state 3.87500 V with 3 decimals of accuracy
-[D][sensor:124]: 'jbd-bms-uart cell voltage 2': Sending state 3.86800 V with 3 decimals of accuracy
-[D][sensor:124]: 'jbd-bms-uart cell voltage 3': Sending state 3.85800 V with 3 decimals of accuracy
-[D][sensor:124]: 'jbd-bms-uart cell voltage 4': Sending state 3.86900 V with 3 decimals of accuracy
-[D][sensor:124]: 'jbd-bms-uart min cell voltage': Sending state 3.85800 V with 3 decimals of accuracy
-[D][sensor:124]: 'jbd-bms-uart max cell voltage': Sending state 3.87500 V with 3 decimals of accuracy
-[D][sensor:124]: 'jbd-bms-uart max voltage cell': Sending state 1.00000  with 0 decimals of accuracy
-[D][sensor:124]: 'jbd-bms-uart min voltage cell': Sending state 3.00000  with 0 decimals of accuracy
-[D][sensor:124]: 'jbd-bms-uart delta cell voltage': Sending state 0.01700 V with 4 decimals of accuracy
-[D][sensor:124]: 'jbd-bms-uart average cell voltage': Sending state 3.86750 V with 4 decimals of accuracy
-```
-
+ 
 ## Protocol
 
 See [ ]
@@ -107,10 +74,6 @@ See [ ]
 None.
 
 ## Goodies
-
-A user of this project ([@the-butterfry](https://github.com/the-butterfry)) shared some YAML code for [a beautiful status display using a 1.54 e-paper display here](https://github.com/syssi/esphome-jbd-bms/discussions/19).
-
-![1.54 e-paper status display](images/eink-status-display.jpg "1.54 e-paper status display")
 
 ## Debugging
 
