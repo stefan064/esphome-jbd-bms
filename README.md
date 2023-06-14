@@ -9,10 +9,11 @@
 ESPHome component to monitor and control a JBD-BMS via UART-TTL 
 
 WORK IN PROGRESS
+Fork will support parallel functionality of JBD-UP16S010. Reading all BMS data will be done by one ESP32 interface. 
 
 ## Supported devices
 
-* JBD-UP16S010-L16S-200A-200A-B-U-R-C-A03
+* JBD-UP16S010-L16S-200A-200A-B-U-R-C-A03 
 
 ## Schematics
 
