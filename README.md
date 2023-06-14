@@ -6,38 +6,13 @@
 ![GitHub watchers](https://img.shields.io/github/watchers/syssi/esphome-jbd-bms)
 [!["Buy Me A Coffee"](https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg)](https://www.buymeacoffee.com/syssi)
 
-ESPHome component to monitor and control a JBD-BMS via UART-TTL or BLE
+ESPHome component to monitor and control a JBD-BMS via UART-TTL 
+
+WORK IN PROGRESS
 
 ## Supported devices
 
-* JBD-SP04S034 200A 4S V1.3 (JBD-SP04S034-L4S-200A-B-U)
-* JBD-SP04S020 120A 4S (JBD-SP04S020-L4S-120A-B-U-K, reported by [@Bretthansenpc](https://github.com/syssi/esphome-jbd-bms/issues/1#issuecomment-1133964580))
-* JBD-SP04S020A 80A 4S (JBD-SP04S020A-L4S-80A-B-U, reported by [@kevin-jake](https://github.com/syssi/esphome-jbd-bms/issues/14))
-* JBD-SP10S009 100A 8S (JBD-SP10S009-L8S-100A-B-K, reported by [@the-butterfry](https://github.com/syssi/esphome-jbd-bms/discussions/17))
-* JBD-SP15S020 60A 13S (JBD-SP15S020-P13S-60A-B, reported by [@it-koncept](https://github.com/syssi/esphome-jbd-bms/discussions/17#discussioncomment-4632315))
-* JBD-SP22S003A 50A 22S (JBD-SP22S003A-L22S, reported by [@johkn](https://github.com/syssi/esphome-jbd-bms/discussions/17#discussioncomment-5942928))
-* JBD-AP20S006 200A 20S (JBD-AP20S006-L20S-200A-B, reported by [@rk125](https://github.com/syssi/esphome-jbd-bms/discussions/16))
-* JBD-AP21S001 150A 20S (JBD-AP21S001-L20S-150A-B, reported by [@yarosman](https://github.com/syssi/esphome-jbd-bms/issues/25))
-* JBD-AP21S001 200A 21S (JBD-AP21S001-L21S-200A-B, reported by [@cctweaker](https://github.com/syssi/esphome-jbd-bms/discussions/17#discussioncomment-6026019))
-* JBD-DP04S007 100A 4S (JBD-DP04S007-L4S-100A, reported by [@reflexsa](https://github.com/syssi/esphome-jbd-bms/discussions/20))
-* JBD-SP18S 100A 18S (JBD-SP18S-100A-086, reported by [@mobilex-Godelmann](https://github.com/syssi/esphome-jbd-bms/discussions/17#discussioncomment-5061954))
-* Basen BG-24100, 8S 24V 100A battery pack (JDB-SP16S020-100A, reported by [@teunito](https://github.com/syssi/esphome-jbd-bms/discussions/17#discussioncomment-5836709))
-* CLRD LFP-82460-COMM, 8S 24V 60A battery pack (15710026-SP10S020-L8S-50A-50AH, reported by [@andrewww173](https://github.com/syssi/esphome-jbd-bms/issues/4#issuecomment-1188292512))
-* Overkill JBD-SP25S003 100A 16S (JBD-SP25S003-L16S-100A-100A-B, reported by [@Uksa007](https://github.com/syssi/esphome-jbd-bms/issues/31))
-
-## Untested devices
-
-Untested but probably supported devices:
-
-* JBD-SP04S028 60/80/100/120/150A 4S
-* JBD-SP04S005 4S 150A
-* JBD-SP05S002 4S 80A
-* JBD-SP15S001 14S 60A
-
-## Requirements
-
-* [ESPHome 2022.11.0 or higher](https://github.com/esphome/esphome/releases).
-* Generic ESP32 or ESP8266 board
+* JBD-UP16S010-L16S-200A-200A-B-U-R-C-A03
 
 ## Schematics
 
@@ -49,21 +24,7 @@ Untested but probably supported devices:
 │          │<----- GND ---->│ ESP8266 │<-- 3.3V
 │          │                │         │<-- GND
 └──────────┘                └─────────┘
-
-
-
-│                JBD-BMS                   │
-│                                          │
-│                          UART   Balancer │
-└─────────────────────────[oooo]──[ooooo]──┘
-                            │││
-                            │││      (ESP32)
-                            │││
-                            ││└─ GND (GND)
-                            │└── RXD (GPIO4)
-                            └─── TXD (GPIO5)
-
-```
+ 
 
 Connector 4 Pin, JST PA 2.0mm pitch
 
@@ -139,7 +100,7 @@ esphome run esp32-example.yaml
 
 ## Protocol
 
-See [Jiabaida.communication.protocol.pdf](docs/Jiabaida.communication.protocol.pdf)
+See [ ]
 
 ## Known issues
 
