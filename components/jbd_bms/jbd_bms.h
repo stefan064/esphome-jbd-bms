@@ -105,6 +105,8 @@ class JbdBms : public uart::UARTDevice, public PollingComponent {
   void set_device_model_text_sensor(text_sensor::TextSensor *device_model_text_sensor) {
     device_model_text_sensor_ = device_model_text_sensor;
   }
+  
+  void set_modbus_id(uint8_t modbus_id) { modbus_id_ = modbus_id; }
   void set_enable_fake_traffic(bool enable_fake_traffic) { enable_fake_traffic_ = enable_fake_traffic; }
   void set_rx_timeout(uint16_t rx_timeout) { rx_timeout_ = rx_timeout; }
   void write_register(uint8_t address, uint16_t value);
@@ -167,6 +169,7 @@ class JbdBms : public uart::UARTDevice, public PollingComponent {
   uint16_t rx_timeout_{150};
   uint8_t no_response_count_{0};
   bool enable_fake_traffic_;
+  uint8_t modbus_id_;
 
   void on_jbd_bms_data_(const uint8_t &function, const std::vector<uint8_t> &data);
   void on_cell_info_data_(const std::vector<uint8_t> &data);

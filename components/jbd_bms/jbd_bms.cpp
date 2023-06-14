@@ -321,7 +321,7 @@ void JbdBms::on_hardware_version_data_(const std::vector<uint8_t> &data) {
   //           0x41 0x2D 0x42 0x2D 0x55
   this->device_model_ = std::string(data.begin(), data.end());
 
-  ESP_LOGI(TAG, "  Model name: %s", this->device_model_.c_str());
+  ESP_LOGI(TAG, "  Model name: %s Modbus id: %d", this->device_model_.c_str(), this->modbus_id_);
   this->publish_state_(this->device_model_text_sensor_, this->device_model_);
 }
 
