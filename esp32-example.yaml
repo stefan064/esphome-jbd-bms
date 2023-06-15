@@ -496,6 +496,24 @@ text_sensor:
       name: "${name} bms2 device model"
 
 switch:
+  - platform: gpio
+    pin:
+     number: GPIO19
+     inverted: true
+    name: "Bms0 enable external balancer"
+    id: bms0_external_balancer_switch
+  - platform: gpio
+    pin:
+     number: GPIO18
+     inverted: true
+    name: "Bms1 enable external balancer" 
+    id: bms1_external_balancer_switch
+  - platform: gpio
+    pin: 
+     number: GPIO5
+     inverted: true
+    name: "Bms2 enable external balancer"
+    id: bms2_external_balancer_switch
   - platform: jbd_bms
     jbd_bms_id: bms0
     charging:

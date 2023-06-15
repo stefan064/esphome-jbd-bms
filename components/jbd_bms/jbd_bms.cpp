@@ -65,6 +65,7 @@ static const char *const ALARMS[ALARMS_SIZE] = {
 };
 
 void JbdBms::setup() { this->send_command_(JBD_CMD_READ, JBD_CMD_HWINFO); }
+
 void JbdBms::proces_response_(void)
 {
   
@@ -102,7 +103,7 @@ void JbdBms::update() {
   this->proces_response_();
   this->send_command_(JBD_CMD_READ, JBD_CMD_CELLINFO);
   this->proces_response_();
-  
+
   if (this->enable_fake_traffic_) {
     // Start: 0xDD modbus_addr 0x03 0x00 0x1B
     this->on_jbd_bms_data_(JBD_CMD_HWINFO, {0x17,0x00,0x00,0x00,0x02,0xD0,0x03,0xE8,0x00,0x00,0x20,0x78
