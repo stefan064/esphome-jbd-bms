@@ -180,7 +180,7 @@ void JbdBms::on_cell_info_data_(const std::vector<uint8_t> &data) {
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
   };
 
-  ESP_LOGI(TAG, "Cell info frame (%d bytes) received", data.size());
+  ESP_LOGI(TAG, "Cell info frame (%d bytes) received Modbud Addres %d", data.size() , this->modbus_id_);
   ESP_LOGVV(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
 
   uint8_t data_len = data.size();
@@ -231,7 +231,7 @@ void JbdBms::on_hardware_info_data_(const std::vector<uint8_t> &data) {
     return (uint32_t(jbd_get_16bit(i + 0)) << 16) | (uint32_t(jbd_get_16bit(i + 2)) << 0);
   };
 
-  ESP_LOGI(TAG, "Hardware info frame (%d bytes) received", data.size());
+  ESP_LOGI(TAG, "Hardware info frame (%d bytes) received Modbud Addres %d", data.size() , this->modbus_id_);
   ESP_LOGVV(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
 
   ESP_LOGD(TAG, "  Device model: %s", this->device_model_.c_str());
