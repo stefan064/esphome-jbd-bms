@@ -34,7 +34,7 @@ Connector 4 Pin, JST PA 2.0mm pitch
 You can install this component with [ESPHome external components feature](https://esphome.io/components/external_components.html) like this:
 ```yaml
 external_components:
-  - source: github://syssi/esphome-jbd-bms@main
+  - source: github://smaksimowicz/esphome-jbd-bms@main
 ```
 
 or just use the `esp32-example.yaml` as proof of concept:
