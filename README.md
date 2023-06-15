@@ -68,7 +68,7 @@ esphome run esp32-example.yaml
  
 ## Protocol
 
-See [ ]
+See [ https://github.com/smaksimowicz/esphome-jbd-bms/blob/main/docs/Communication%20protocol-QM-UPS1601.pdf ]
 
 ## Known issues
 
