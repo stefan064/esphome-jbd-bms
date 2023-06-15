@@ -190,6 +190,7 @@ class JbdBms : public uart::UARTDevice, public PollingComponent {
   void on_hardware_info_data_(const std::vector<uint8_t> &data);
   void on_hardware_version_data_(const std::vector<uint8_t> &data);
   bool parse_jbd_bms_byte_(uint8_t byte);
+ 
   void publish_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state);
   void publish_state_(sensor::Sensor *sensor, float value);
   void publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state);
@@ -197,6 +198,7 @@ class JbdBms : public uart::UARTDevice, public PollingComponent {
   void reset_online_status_tracker_();
   void track_online_status_();
   void send_command_(uint8_t action, uint8_t function);
+  void proces_response_(void);
   std::string error_bits_to_string_(uint16_t bitmask);
   std::string alarm_bits_to_string_(uint16_t bitmask);
 

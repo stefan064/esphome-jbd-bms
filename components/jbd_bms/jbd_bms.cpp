@@ -65,34 +65,44 @@ static const char *const ALARMS[ALARMS_SIZE] = {
 };
 
 void JbdBms::setup() { this->send_command_(JBD_CMD_READ, JBD_CMD_HWINFO); }
-
-void JbdBms::loop() {
-  const uint32_t now = millis();
-
-  if (now - this->last_byte_ > this->rx_timeout_) {
-    ESP_LOGVV(TAG, "Buffer cleared due to timeout: %s",
-              format_hex_pretty(&this->rx_buffer_.front(), this->rx_buffer_.size()).c_str());
-    this->rx_buffer_.clear();
-    this->last_byte_ = now;
-  }
-
-  while (this->available()) {
-    uint8_t byte;
-    this->read_byte(&byte);
-    if (this->parse_jbd_bms_byte_(byte)) {
-      this->last_byte_ = now;
-    } else {
-      ESP_LOGVV(TAG, "Buffer cleared due to reset: %s",
+void JbdBms::proces_response_(void)
+{
+  
+  for(;;) {
+    const uint32_t now = millis();
+    if (now - this->last_byte_ > this->rx_timeout_) {
+      ESP_LOGVV(TAG, "Buffer cleared due to timeout: %s",
                 format_hex_pretty(&this->rx_buffer_.front(), this->rx_buffer_.size()).c_str());
       this->rx_buffer_.clear();
+      this->last_byte_ = now;
+      return;
+    }
+
+    while (this->available()) {
+      uint8_t byte;
+      this->read_byte(&byte);
+      if (this->parse_jbd_bms_byte_(byte)) {
+        this->last_byte_ = now;
+      } else {
+        ESP_LOGVV(TAG, "Buffer cleared due to reset: %s",
+                  format_hex_pretty(&this->rx_buffer_.front(), this->rx_buffer_.size()).c_str());
+        this->rx_buffer_.clear();
+      }
     }
   }
+}
+
+void JbdBms::loop() {
+ 
 }
 
 void JbdBms::update() {
   this->track_online_status_();
   this->send_command_(JBD_CMD_READ, JBD_CMD_HWINFO);
-
+  this->proces_response_();
+  this->send_command_(JBD_CMD_READ, JBD_CMD_CELLINFO);
+  this->proces_response_();
+  
   if (this->enable_fake_traffic_) {
     // Start: 0xDD modbus_addr 0x03 0x00 0x1B
     this->on_jbd_bms_data_(JBD_CMD_HWINFO, {0x17,0x00,0x00,0x00,0x02,0xD0,0x03,0xE8,0x00,0x00,0x20,0x78
@@ -180,7 +190,7 @@ void JbdBms::on_cell_info_data_(const std::vector<uint8_t> &data) {
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
   };
 
-  ESP_LOGI(TAG, "Cell info frame (%d bytes) received Modbud Addres %d", data.size() , this->modbus_id_);
+  ESP_LOGI(TAG, "Cell info frame (%d bytes) received Modbus Addres %d", data.size() , this->modbus_id_);
   ESP_LOGVV(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
 
   uint8_t data_len = data.size();
@@ -231,7 +241,7 @@ void JbdBms::on_hardware_info_data_(const std::vector<uint8_t> &data) {
     return (uint32_t(jbd_get_16bit(i + 0)) << 16) | (uint32_t(jbd_get_16bit(i + 2)) << 0);
   };
 
-  ESP_LOGI(TAG, "Hardware info frame (%d bytes) received Modbud Addres %d", data.size() , this->modbus_id_);
+  ESP_LOGI(TAG, "Hardware info frame (%d bytes) received Modbus Addres %d", data.size() , this->modbus_id_);
   ESP_LOGVV(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
 
   ESP_LOGD(TAG, "  Device model: %s", this->device_model_.c_str());
@@ -311,7 +321,6 @@ void JbdBms::on_hardware_info_data_(const std::vector<uint8_t> &data) {
                          (float) (jbd_get_16bit(29 + (i * 2)) - 2731) * 0.1f);
   }
 
-  this->send_command_(JBD_CMD_READ, JBD_CMD_CELLINFO);
 }
 
 void JbdBms::track_online_status_() {
