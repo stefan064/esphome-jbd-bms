@@ -16,7 +16,6 @@ static const uint8_t JBD_CMD_WRITE = 0x5A;
 
 static const uint8_t JBD_CMD_HWINFO = 0x03;
 static const uint8_t JBD_CMD_CELLINFO = 0x04;
-static const uint8_t JBD_CMD_HWVER = 0x05;
 
 static const uint8_t JBD_CMD_CAP_REM = 0xE0;   // Set remaining capacity
 static const uint8_t JBD_CMD_MOS = 0xE1;       // Set charging/discharging bitmask
@@ -40,12 +39,32 @@ static const char *const ERRORS[ERRORS_SIZE] = {
     "Short circuit",                  // 0x0A
     "IC front-end error",             // 0x0B
     "Mosfet Software Lock",           // 0x0C
-    "Charge timeout Close",           // 0x0D
-    "Unknown (0x0E)",                 // 0x0E
-    "Unknown (0x0F)",                 // 0x0F
+    "High ambient temperature",       // 0x0D
+    "Low ambient temperature",        // 0x0E
+    "FET high temperature",           // 0x0F
 };
 
-void JbdBms::setup() { this->send_command_(JBD_CMD_READ, JBD_CMD_HWVER); }
+static const uint8_t ALARMS_SIZE = 16;
+static const char *const ALARMS[ALARMS_SIZE] = {
+    "Single cell low voltage alarm",       // 0x00
+    "Single cell high voltage alarm",      // 0x01
+    "Whole pack low voltage alarm",        // 0x02
+    "Whole pack high voltage alarm",       // 0x03
+    "Charging over current alarm",         // 0x04
+    "Discharge over current alarm",        // 0x05
+    "Charging high temperature alarm",     // 0x06
+    "Charging low temperature alarm",      // 0x07
+    "Discharge high temperature alarm",    // 0x08
+    "Low temperature discharge alarm",     // 0x09
+    "Ambient high temperature alarm",      // 0x0A
+    "Ambient low temperature alarm",       // 0x0B
+    "PCB high temperature alarm",          // 0x0C
+    "Large differential pressure alarm",   // 0x0D
+    "Low capacity alarms",                 // 0x0E
+    "Empty",                               // 0x0F
+};
+
+void JbdBms::setup() { this->send_command_(JBD_CMD_READ, JBD_CMD_HWINFO); }
 
 void JbdBms::loop() {
   const uint32_t now = millis();
@@ -75,20 +94,16 @@ void JbdBms::update() {
   this->send_command_(JBD_CMD_READ, JBD_CMD_HWINFO);
 
   if (this->enable_fake_traffic_) {
-    // Start: 0xDD 0x03 0x00 0x1D
-    this->on_jbd_bms_data_(JBD_CMD_HWINFO, {0x06, 0x18, 0x00, 0x00, 0x01, 0xF2, 0x01, 0xF4, 0x00, 0x00, 0x2C,
-                                            0x7C, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x64, 0x03, 0x04,
-                                            0x03, 0x0B, 0x8B, 0x0B, 0x8A, 0x0B, 0x84, 0xFA, 0x8D, 0x77});
-    // End: 0xFA 0x8D 0x77
+    // Start: 0xDD modbus_addr 0x03 0x00 0x1B
+    this->on_jbd_bms_data_(JBD_CMD_HWINFO, {0x17, 0x00,0x00,0x00,0x02,0xD0,0x03,0xE8,0x00,0x00,0x20,0x78
+                                           ,0x00,0x00,0x00,0x00,0x00,0x00,0x10,0x48,0x03,0x0F,0x02,0x0B,
+                                           0x76,0x0B,0x82,0xFB,0xFF,0x77});
+    // End: CRC_HI , CRC_LO,  0x77
 
-    // Start: 0xDD 0x04 0x00 0x08
+    // Start: 0xDD modbus_addr 0x04 0x00 0x08
     this->on_jbd_bms_data_(JBD_CMD_CELLINFO, {0x0F, 0x45, 0x0F, 0x3D, 0x0F, 0x37, 0x0F, 0x3D, 0xFE, 0xC6, 0x77});
-    // End: 0xFE 0xC6 0x77
+    // End: CRC_HI , CRC_LO,  0x77
 
-    // Start: 0xDD 0x05 0x00 0x19
-    this->on_jbd_bms_data_(JBD_CMD_HWVER, {0x4A, 0x42, 0x44, 0x2D, 0x53, 0x50, 0x30, 0x34, 0x53, 0x30, 0x33, 0x34, 0x2D,
-                                           0x4C, 0x34, 0x53, 0x2D, 0x32, 0x30, 0x30, 0x41, 0x2D, 0x42, 0x2D, 0x55});
-    // End: 0xFA, 0x08, 0x77
   }
 }
 
@@ -98,15 +113,16 @@ bool JbdBms::parse_jbd_bms_byte_(uint8_t byte) {
   const uint8_t *raw = &this->rx_buffer_[0];
 
   // Example response
-  // 0xDD 0x03 0x00 0x1D 0x06 0x17 0x00 0x00 0x01 0xF3 0x01 0xF4 0x00 0x00 0x2C 0x7C 0x00 0x00
+  // 0xDD 0x00 0x03 0x00 0x1D 0x06 0x17 0x00 0x00 0x01 0xF3 0x01 0xF4 0x00 0x00 0x2C 0x7C 0x00 0x00
   // 0x00 0x00 0x00 0x00 0x80 0x64 0x03 0x04 0x03 0x0B 0x8D 0x0B 0x8C 0x0B 0x88 0xFA 0x85 0x77
   //
   // Byte Len  Payload                Content              Coeff.      Unit        Example value
   // 0     1   0xDD                   Start of frame
-  // 1     1   0x03                   Function
-  // 2     1   0x00                   Status
-  // 3     1   0x1D                   Data length n
-  // 4     n     0x06 0x17
+  // 1     1   0x00..0x0F             Modbus Addr
+  // 2     1   0x03                   Function
+  // 3     1   0x00                   Status
+  // 4     1   0x1D                   Data length n
+  // 5     n     0x06 0x17
   //             0x00 0x00
   //             0x01 0xF3
   //             0x01 0xF4
@@ -121,8 +137,8 @@ bool JbdBms::parse_jbd_bms_byte_(uint8_t byte) {
   //             0x8D 0x0B
   //             0x8C 0x0B
   //             0x88
-  // 4+n    2   0xFA 0x85               Checksum
-  // 4+n+2  1   0x77                    End of frame
+  // 5+n    2   0xFA 0x85               Checksum
+  // 5+n+2  1   0x77                    End of frame
 
   if (at == 0) {
     if (raw[0] != 0xDD) {
@@ -135,21 +151,25 @@ bool JbdBms::parse_jbd_bms_byte_(uint8_t byte) {
     return true;
   }
 
-  // Byte 1 (Function)
-  // Byte 2 (Status)
-  // Byte 3 (Length)
-  if (at < 3)
+  // Byte 1 (Modbus Addr)
+  // Byte 2 (Function)
+  // Byte 3 (Status)
+  // Byte 4 (Length)
+  if (at < 4)
     return true;
 
-  uint16_t data_len = raw[3];
-  uint16_t frame_len = 4 + data_len + 3;
+  if(raw[1]!= this->modbus_id_) 
+    return true;
+
+  uint16_t data_len = raw[4];
+  uint16_t frame_len = 5 + data_len + 3;
 
   // Byte 0...4+data_len+3
   if (at < frame_len - 1)
     return true;
 
-  uint8_t function = raw[1];
-  uint16_t computed_crc = chksum_(raw + 2, data_len + 2);
+  uint8_t function = raw[2];
+  uint16_t computed_crc = chksum_(raw + 3, data_len + 2);
   uint16_t remote_crc = uint16_t(raw[frame_len - 3]) << 8 | (uint16_t(raw[frame_len - 2]) << 0);
   if (computed_crc != remote_crc) {
     ESP_LOGW(TAG, "CRC check failed! 0x%04X != 0x%04X", computed_crc, remote_crc);
@@ -158,7 +178,7 @@ bool JbdBms::parse_jbd_bms_byte_(uint8_t byte) {
 
   ESP_LOGVV(TAG, "RX <- %s", format_hex_pretty(raw, at + 1).c_str());
 
-  std::vector<uint8_t> data(this->rx_buffer_.begin() + 4, this->rx_buffer_.begin() + frame_len - 3);
+  std::vector<uint8_t> data(this->rx_buffer_.begin() + 5, this->rx_buffer_.begin() + frame_len - 5);
 
   this->on_jbd_bms_data_(function, data);
 
@@ -175,9 +195,6 @@ void JbdBms::on_jbd_bms_data_(const uint8_t &function, const std::vector<uint8_t
       break;
     case JBD_CMD_CELLINFO:
       this->on_cell_info_data_(data);
-      break;
-    case JBD_CMD_HWVER:
-      this->on_hardware_version_data_(data);
       break;
     default:
       ESP_LOGW(TAG, "Unhandled response received: %s", format_hex_pretty(&data.front(), data.size()).c_str());
@@ -294,35 +311,33 @@ void JbdBms::on_hardware_info_data_(const std::vector<uint8_t> &data) {
   this->publish_state_(this->charging_binary_sensor_, operation_status & JBD_MOS_CHARGE);
   this->publish_state_(this->discharging_binary_sensor_, operation_status & JBD_MOS_DISCHARGE);
 
-  // 21    2   0x04                   Cell count
+  // 21    1   0x04                   Cell count
   this->publish_state_(this->battery_strings_sensor_, data[21]);
 
-  // 22    3   0x03                   Temperature sensors
-  // 23    2   0x0B 0x8D              Temperature 1
-  // 25    2   0x0B 0x8C              Temperature 2
-  // 27    2   0x0B 0x88              Temperature 3
-  uint8_t temperature_sensors = std::min(data[22], (uint8_t) 6);
+  // 22    2   0x00 0x00              Protection Status
+  uint16_t alarm_bitmask = jbd_get_16bit(22);
+  this->publish_state_(this->alarm_bitmask_sensor_, (float) alarm_bitmask);
+  this->publish_state_(this->alarms_text_sensor_, this->alarm_bits_to_string_(alarm_bitmask));
+
+  // 24    2   0x00 0x00              Ambient temp sensor
+  this->publish_state_(this->temperature_ambient_sensor_,(float) (jbd_get_16bit(24) - 2731) * 0.1f);
+
+  // 26    2   0x00 0x00              FET temp sensor
+  this->publish_state_(this->temperature_fet_sensor_,(float) (jbd_get_16bit(26) - 2731) * 0.1f);
+
+  // 28    1   0x04                   Temperature sensors cnt
+  // 29    2   0x0B 0x8D              Temperature 1
+  // 31    2   0x0B 0x8C              Temperature 2
+  // 33    2   0x0B 0x88              Temperature 3
+  // 35    2   0x0B 0x88              Temperature 4
+  uint8_t temperature_sensors = std::min(data[28], (uint8_t) 4);
   this->publish_state_(this->temperature_sensors_sensor_, temperature_sensors);
   for (uint8_t i = 0; i < temperature_sensors; i++) {
     this->publish_state_(this->temperatures_[i].temperature_sensor_,
-                         (float) (jbd_get_16bit(23 + (i * 2)) - 2731) * 0.1f);
+                         (float) (jbd_get_16bit(29 + (i * 2)) - 2731) * 0.1f);
   }
 
   this->send_command_(JBD_CMD_READ, JBD_CMD_CELLINFO);
-}
-
-void JbdBms::on_hardware_version_data_(const std::vector<uint8_t> &data) {
-  ESP_LOGI(TAG, "Hardware version frame (%d bytes) received", data.size());
-  ESP_LOGVV(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
-
-  // Byte Len  Payload                                              Content
-  // 0    25   0x4A 0x42 0x44 0x2D 0x53 0x50 0x30 0x34 0x53 0x30
-  //           0x33 0x34 0x2D 0x4C 0x34 0x53 0x2D 0x32 0x30 0x30
-  //           0x41 0x2D 0x42 0x2D 0x55
-  this->device_model_ = std::string(data.begin(), data.end());
-
-  ESP_LOGI(TAG, "  Model name: %s Modbus id: %d", this->device_model_.c_str(), this->modbus_id_);
-  this->publish_state_(this->device_model_text_sensor_, this->device_model_);
 }
 
 void JbdBms::track_online_status_() {
@@ -343,6 +358,7 @@ void JbdBms::reset_online_status_tracker_() {
 void JbdBms::publish_device_unavailable_() {
   this->publish_state_(this->online_status_binary_sensor_, false);
   this->publish_state_(this->errors_text_sensor_, "Offline");
+  this->publish_state_(this->alarms_text_sensor_, "Offline");
 
   this->publish_state_(state_of_charge_sensor_, NAN);
   this->publish_state_(total_voltage_sensor_, NAN);
@@ -361,9 +377,12 @@ void JbdBms::publish_device_unavailable_() {
   this->publish_state_(average_cell_voltage_sensor_, NAN);
   this->publish_state_(operation_status_bitmask_sensor_, NAN);
   this->publish_state_(errors_bitmask_sensor_, NAN);
+  this->publish_state_(alarm_bitmask_sensor_, NAN);
   this->publish_state_(balancer_status_bitmask_sensor_, NAN);
   this->publish_state_(battery_strings_sensor_, NAN);
   this->publish_state_(temperature_sensors_sensor_, NAN);
+  this->publish_state_(temperature_ambient_sensor_, NAN);
+  this->publish_state_(temperature_fet_sensor_, NAN);
   this->publish_state_(software_version_sensor_, NAN);
 
   for (auto &temperature : this->temperatures_) {
@@ -394,6 +413,7 @@ void JbdBms::dump_config() {  // NOLINT(google-readability-function-size,readabi
   LOG_SENSOR("", "State of charge", this->state_of_charge_sensor_);
   LOG_SENSOR("", "Operation status bitmask", operation_status_bitmask_sensor_);
   LOG_SENSOR("", "Errors bitmask", errors_bitmask_sensor_);
+  LOG_SENSOR("", "Alarm bitmask", alarm_bitmask_sensor_);
   LOG_SENSOR("", "Nominal capacity", this->nominal_capacity_sensor_);
   LOG_SENSOR("", "Charging cycles", this->charging_cycles_sensor_);
   LOG_SENSOR("", "Balancer status bitmask", balancer_status_bitmask_sensor_);
@@ -405,12 +425,12 @@ void JbdBms::dump_config() {  // NOLINT(google-readability-function-size,readabi
   LOG_SENSOR("", "Max voltage cell", this->max_voltage_cell_sensor_);
   LOG_SENSOR("", "Minimum cell voltage", this->min_cell_voltage_sensor_);
   LOG_SENSOR("", "Temperature sensors", temperature_sensors_sensor_);
+  LOG_SENSOR("", "Temperature ambient sensor", temperature_ambient_sensor_);
+  LOG_SENSOR("", "Temperature fet sensor", temperature_fet_sensor_);
   LOG_SENSOR("", "Temperature 1", this->temperatures_[0].temperature_sensor_);
   LOG_SENSOR("", "Temperature 2", this->temperatures_[1].temperature_sensor_);
   LOG_SENSOR("", "Temperature 3", this->temperatures_[2].temperature_sensor_);
   LOG_SENSOR("", "Temperature 4", this->temperatures_[3].temperature_sensor_);
-  LOG_SENSOR("", "Temperature 5", this->temperatures_[4].temperature_sensor_);
-  LOG_SENSOR("", "Temperature 6", this->temperatures_[5].temperature_sensor_);
   LOG_SENSOR("", "Cell Voltage 1", this->cells_[0].cell_voltage_sensor_);
   LOG_SENSOR("", "Cell Voltage 2", this->cells_[1].cell_voltage_sensor_);
   LOG_SENSOR("", "Cell Voltage 3", this->cells_[2].cell_voltage_sensor_);
@@ -446,6 +466,7 @@ void JbdBms::dump_config() {  // NOLINT(google-readability-function-size,readabi
 
   LOG_TEXT_SENSOR("", "Operation status", this->operation_status_text_sensor_);
   LOG_TEXT_SENSOR("", "Errors", this->errors_text_sensor_);
+  LOG_TEXT_SENSOR("", "Alarms", this->alarms_text_sensor_);
   LOG_TEXT_SENSOR("", "Device model", this->device_model_text_sensor_);
 
   this->check_uart_settings(9600);
@@ -482,17 +503,18 @@ void JbdBms::write_register(uint8_t address, uint16_t value) {
 }
 
 void JbdBms::send_command_(uint8_t action, uint8_t function) {
-  uint8_t frame[7];
+  uint8_t frame[8];
   uint8_t data_len = 0;
 
   frame[0] = JBD_PKT_START;
-  frame[1] = action;
-  frame[2] = function;
-  frame[3] = data_len;
-  auto crc = chksum_(frame + 2, data_len + 2);
-  frame[4] = crc >> 8;
-  frame[5] = crc >> 0;
-  frame[6] = JBD_PKT_END;
+  frame[1] = this->modbus_id_;
+  frame[2] = action;
+  frame[3] = function;
+  frame[4] = data_len;
+  auto crc = chksum_(frame + 3, data_len + 2);
+  frame[5] = crc >> 8;
+  frame[6] = crc >> 0;
+  frame[7] = JBD_PKT_END;
 
   this->write_array(frame, 7);
   this->flush();
@@ -504,6 +526,22 @@ std::string JbdBms::error_bits_to_string_(const uint16_t mask) {
     for (int i = 0; i < ERRORS_SIZE; i++) {
       if (mask & (1 << i)) {
         values.append(ERRORS[i]);
+        values.append(";");
+      }
+    }
+    if (!values.empty()) {
+      values.pop_back();
+    }
+  }
+  return values;
+}
+
+std::string JbdBms::alarm_bits_to_string_(const uint16_t mask) {
+  std::string values = "";
+  if (mask) {
+    for (int i = 0; i < ALARMS_SIZE; i++) {
+      if (mask & (1 << i)) {
+        values.append(ALARMS[i]);
         values.append(";");
       }
     }

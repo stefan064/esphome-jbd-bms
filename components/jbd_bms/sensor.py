@@ -13,7 +13,7 @@ from esphome.const import (
     STATE_CLASS_MEASUREMENT,
     UNIT_AMPERE,
     UNIT_CELSIUS,
-    UNIT_EMPTY,
+    UNIT_EMPTY, 
     UNIT_PERCENT,
     UNIT_VOLT,
     UNIT_WATT,
@@ -42,6 +42,7 @@ CONF_DELTA_CELL_VOLTAGE = "delta_cell_voltage"
 CONF_AVERAGE_CELL_VOLTAGE = "average_cell_voltage"
 CONF_OPERATION_STATUS_BITMASK = "operation_status_bitmask"
 CONF_ERRORS_BITMASK = "errors_bitmask"
+CONF_ALARM_BITMASK = "alarm_bitmask"
 CONF_BALANCER_STATUS_BITMASK = "balancer_status_bitmask"
 CONF_BATTERY_STRINGS = "battery_strings"
 CONF_SOFTWARE_VERSION = "software_version"
@@ -83,8 +84,8 @@ CONF_TEMPERATURE_1 = "temperature_1"
 CONF_TEMPERATURE_2 = "temperature_2"
 CONF_TEMPERATURE_3 = "temperature_3"
 CONF_TEMPERATURE_4 = "temperature_4"
-CONF_TEMPERATURE_5 = "temperature_5"
-CONF_TEMPERATURE_6 = "temperature_6"
+CONF_TEMPERATURE_AMBIENT = "temperature_ambient"
+CONF_TEMPERATURE_FET = "temperature_fet"
 
 ICON_CURRENT_DC = "mdi:current-dc"
 ICON_STATE_OF_CHARGE = "mdi:battery-50"
@@ -99,6 +100,7 @@ ICON_MIN_VOLTAGE_CELL = "mdi:battery-minus-outline"
 ICON_MAX_VOLTAGE_CELL = "mdi:battery-plus-outline"
 ICON_OPERATION_STATUS_BITMASK = "mdi:heart-pulse"
 ICON_ERRORS_BITMASK = "mdi:alert-circle-outline"
+ICON_ALARM_BITMASK = "mdi:alert-circle-outline"
 ICON_BALANCER_STATUS_BITMASK = "mdi:seesaw"
 ICON_SOFTWARE_VERSION = "mdi:numeric"
 
@@ -146,8 +148,6 @@ TEMPERATURES = [
     CONF_TEMPERATURE_2,
     CONF_TEMPERATURE_3,
     CONF_TEMPERATURE_4,
-    CONF_TEMPERATURE_5,
-    CONF_TEMPERATURE_6,
 ]
 
 SENSORS = [
@@ -168,9 +168,12 @@ SENSORS = [
     CONF_AVERAGE_CELL_VOLTAGE,
     CONF_OPERATION_STATUS_BITMASK,
     CONF_ERRORS_BITMASK,
+    CONF_ALARM_BITMASK,
     CONF_BALANCER_STATUS_BITMASK,
     CONF_BATTERY_STRINGS,
     CONF_SOFTWARE_VERSION,
+    CONF_TEMPERATURE_AMBIENT,
+    CONF_TEMPERATURE_FET
 ]
 
 # pylint: disable=too-many-function-args
@@ -247,6 +250,13 @@ CONFIG_SCHEMA = cv.Schema(
             device_class=DEVICE_CLASS_EMPTY,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
+        cv.Optional(CONF_ALARM_BITMASK): sensor.sensor_schema(
+            unit_of_measurement=UNIT_EMPTY,
+            icon=ICON_ALARM_BITMASK,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_EMPTY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
         cv.Optional(CONF_OPERATION_STATUS_BITMASK): sensor.sensor_schema(
             unit_of_measurement=UNIT_EMPTY,
             icon=ICON_OPERATION_STATUS_BITMASK,
@@ -317,6 +327,20 @@ CONFIG_SCHEMA = cv.Schema(
             device_class=DEVICE_CLASS_VOLTAGE,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
+        cv.Optional(CONF_TEMPERATURE_AMBIENT): sensor.sensor_schema(
+            unit_of_measurement=UNIT_CELSIUS,
+            icon=ICON_EMPTY,
+            accuracy_decimals=1,
+            device_class=DEVICE_CLASS_TEMPERATURE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_TEMPERATURE_FET): sensor.sensor_schema(
+            unit_of_measurement=UNIT_CELSIUS,
+            icon=ICON_EMPTY,
+            accuracy_decimals=1,
+            device_class=DEVICE_CLASS_TEMPERATURE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
         cv.Optional(CONF_TEMPERATURE_1): sensor.sensor_schema(
             unit_of_measurement=UNIT_CELSIUS,
             icon=ICON_EMPTY,
@@ -339,20 +363,6 @@ CONFIG_SCHEMA = cv.Schema(
             state_class=STATE_CLASS_MEASUREMENT,
         ),
         cv.Optional(CONF_TEMPERATURE_4): sensor.sensor_schema(
-            unit_of_measurement=UNIT_CELSIUS,
-            icon=ICON_EMPTY,
-            accuracy_decimals=1,
-            device_class=DEVICE_CLASS_TEMPERATURE,
-            state_class=STATE_CLASS_MEASUREMENT,
-        ),
-        cv.Optional(CONF_TEMPERATURE_5): sensor.sensor_schema(
-            unit_of_measurement=UNIT_CELSIUS,
-            icon=ICON_EMPTY,
-            accuracy_decimals=1,
-            device_class=DEVICE_CLASS_TEMPERATURE,
-            state_class=STATE_CLASS_MEASUREMENT,
-        ),
-        cv.Optional(CONF_TEMPERATURE_6): sensor.sensor_schema(
             unit_of_measurement=UNIT_CELSIUS,
             icon=ICON_EMPTY,
             accuracy_decimals=1,

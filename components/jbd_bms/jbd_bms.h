@@ -75,6 +75,9 @@ class JbdBms : public uart::UARTDevice, public PollingComponent {
   void set_errors_bitmask_sensor(sensor::Sensor *errors_bitmask_sensor) {
     errors_bitmask_sensor_ = errors_bitmask_sensor;
   }
+  void set_alarm_bitmask_sensor(sensor::Sensor *alarm_bitmask_sensor) {
+    alarm_bitmask_sensor_ = alarm_bitmask_sensor;
+  }
   void set_balancer_status_bitmask_sensor(sensor::Sensor *balancer_status_bitmask_sensor) {
     balancer_status_bitmask_sensor_ = balancer_status_bitmask_sensor;
   }
@@ -93,6 +96,12 @@ class JbdBms : public uart::UARTDevice, public PollingComponent {
   void set_temperature_sensor(uint8_t temperature, sensor::Sensor *temperature_sensor) {
     this->temperatures_[temperature].temperature_sensor_ = temperature_sensor;
   }
+  void set_temperature_ambient_sensor(sensor::Sensor *temperature_ambient_sensor) {
+    temperature_ambient_sensor_ = temperature_ambient_sensor;
+  }
+  void set_temperature_fet_sensor(sensor::Sensor *temperature_fet_sensor) {
+    temperature_fet_sensor_ = temperature_fet_sensor;
+  }
 
   void set_charging_switch(switch_::Switch *charging_switch) { charging_switch_ = charging_switch; }
   void set_discharging_switch(switch_::Switch *discharging_switch) { discharging_switch_ = discharging_switch; }
@@ -102,6 +111,7 @@ class JbdBms : public uart::UARTDevice, public PollingComponent {
     operation_status_text_sensor_ = operation_status_text_sensor;
   }
   void set_errors_text_sensor(text_sensor::TextSensor *errors_text_sensor) { errors_text_sensor_ = errors_text_sensor; }
+  void set_alarms_text_sensor(text_sensor::TextSensor *alarms_text_sensor) { alarms_text_sensor_ = alarms_text_sensor; }
   void set_device_model_text_sensor(text_sensor::TextSensor *device_model_text_sensor) {
     device_model_text_sensor_ = device_model_text_sensor;
   }
@@ -134,10 +144,13 @@ class JbdBms : public uart::UARTDevice, public PollingComponent {
   sensor::Sensor *average_cell_voltage_sensor_;
   sensor::Sensor *operation_status_bitmask_sensor_;
   sensor::Sensor *errors_bitmask_sensor_;
+  sensor::Sensor *alarm_bitmask_sensor_;
   sensor::Sensor *balancer_status_bitmask_sensor_;
   sensor::Sensor *battery_strings_sensor_;
   sensor::Sensor *temperature_sensors_sensor_;
   sensor::Sensor *software_version_sensor_;
+  sensor::Sensor *temperature_ambient_sensor_;
+  sensor::Sensor *temperature_fet_sensor_;
 
   switch_::Switch *charging_switch_;
   switch_::Switch *discharging_switch_;
@@ -145,6 +158,7 @@ class JbdBms : public uart::UARTDevice, public PollingComponent {
 
   text_sensor::TextSensor *operation_status_text_sensor_;
   text_sensor::TextSensor *errors_text_sensor_;
+  text_sensor::TextSensor *alarms_text_sensor_;
   text_sensor::TextSensor *device_model_text_sensor_;
 
   struct Cell {
@@ -153,7 +167,7 @@ class JbdBms : public uart::UARTDevice, public PollingComponent {
 
   struct Temperature {
     sensor::Sensor *temperature_sensor_{nullptr};
-  } temperatures_[6];
+  } temperatures_[4];
 
   // @TODO:
   //
@@ -184,6 +198,7 @@ class JbdBms : public uart::UARTDevice, public PollingComponent {
   void track_online_status_();
   void send_command_(uint8_t action, uint8_t function);
   std::string error_bits_to_string_(uint16_t bitmask);
+  std::string alarm_bits_to_string_(uint16_t bitmask);
 
   uint16_t chksum_(const uint8_t data[], const uint16_t len) {
     uint16_t checksum = 0x00;

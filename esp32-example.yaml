@@ -140,10 +140,10 @@ sensor:
       name: "${name} bms0 temperature 3"
     temperature_4:
       name: "${name} bms0 temperature 4"
-    temperature_5:
-      name: "${name} bms0 temperature 5"
-    temperature_6:
-      name: "${name} bms0 temperature 6"
+    temperature_ambient:
+      name: "${name} bms0 temperature ambient"
+    temperature_fet:
+      name: "${name} bms0 temperature fet"
     cell_voltage_1:
       name: "${name} bms0 cell voltage 1"
     cell_voltage_2:
@@ -212,6 +212,8 @@ sensor:
       name: "${name} bms0 operation status bitmask"
     errors_bitmask:
       name: "${name} bms0 errors bitmask"
+    alarm_bitmask:
+        name: "${name} bms0 alarm bitmask"
     balancer_status_bitmask:
       name: "${name} bms0 balancer status bitmask"
     software_version:
@@ -260,10 +262,10 @@ sensor:
       name: "${name} bms1 temperature 3"
     temperature_4:
       name: "${name} bms1 temperature 4"
-    temperature_5:
-      name: "${name} bms1 temperature 5"
-    temperature_6:
-      name: "${name} bms1 temperature 6"
+    temperature_ambient:
+      name: "${name} bms1 temperature ambient"
+    temperature_fet:
+      name: "${name} bms1 temperature fet"
     cell_voltage_1:
       name: "${name} bms1 cell voltage 1"
     cell_voltage_2:
@@ -332,6 +334,8 @@ sensor:
       name: "${name} bms1 operation status bitmask"
     errors_bitmask:
       name: "${name} bms1 errors bitmask"
+    alarm_bitmask:
+        name: "${name} bms1 alarm bitmask"
     balancer_status_bitmask:
       name: "${name} bms1 balancer status bitmask"
     software_version:
@@ -380,10 +384,10 @@ sensor:
       name: "${name} bms2 temperature 3"
     temperature_4:
       name: "${name} bms2 temperature 4"
-    temperature_5:
-      name: "${name} bms2 temperature 5"
-    temperature_6:
-      name: "${name} bms2 temperature 6"
+    temperature_ambient:
+      name: "${name} bms2 temperature ambient"
+    temperature_fet:
+      name: "${name} bms2 temperature fet"
     cell_voltage_1:
       name: "${name} bms2 cell voltage 1"
     cell_voltage_2:
@@ -452,6 +456,8 @@ sensor:
       name: "${name} bms2 operation status bitmask"
     errors_bitmask:
       name: "${name} bms2 errors bitmask"
+    alarm_bitmask:
+        name: "${name} bms2 alarm bitmask"
     balancer_status_bitmask:
       name: "${name} bms2 balancer status bitmask"
     software_version:
@@ -462,6 +468,8 @@ text_sensor:
     jbd_bms_id: bms0
     errors:
       name: "${name} bms0 errors"
+    alarms:
+      name: "${name} bms0 alarms"
     operation_status:
       name: "${name} bms0 operation status"
     device_model:
@@ -470,6 +478,8 @@ text_sensor:
     jbd_bms_id: bms1
     errors:
       name: "${name} bms1 errors"
+    alarms:
+      name: "${name} bms1 alarms"
     operation_status:
       name: "${name} bms1 operation status"
     device_model:
@@ -478,6 +488,8 @@ text_sensor:
     jbd_bms_id: bms2
     errors:
       name: "${name} bms2 errors"
+    alarms:
+      name: "${name} bms2 alarms"
     operation_status:
       name: "${name} bms2 operation status"
     device_model:
