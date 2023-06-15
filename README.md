@@ -44,7 +44,7 @@ or just use the `esp32-example.yaml` as proof of concept:
 pip3 install esphome
 
 # Clone this external component
-git clone https://github.com/syssi/esphome-jbd-bms.git
+git clone https://github.com/smaksimowicz/esphome-jbd-bms.git
 cd esphome-jbd-bms
 
 # Create a secrets.yaml containing some setup specific secrets
