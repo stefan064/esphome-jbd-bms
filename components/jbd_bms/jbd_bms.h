@@ -163,7 +163,7 @@ class JbdBms : public uart::UARTDevice, public PollingComponent {
 
   struct Cell {
     sensor::Sensor *cell_voltage_sensor_{nullptr};
-  } cells_[32];
+  } cells_[16];
 
   struct Temperature {
     sensor::Sensor *temperature_sensor_{nullptr};

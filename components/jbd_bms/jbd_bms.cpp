@@ -64,7 +64,9 @@ static const char *const ALARMS[ALARMS_SIZE] = {
     "Empty",                               // 0x0F
 };
 
-void JbdBms::setup() { this->send_command_(JBD_CMD_READ, JBD_CMD_HWINFO); }
+void JbdBms::setup() { 
+  this->send_command_(JBD_CMD_READ, JBD_CMD_HWINFO); 
+}
 
 void JbdBms::proces_response_(void)
 {
@@ -94,7 +96,7 @@ void JbdBms::proces_response_(void)
 }
 
 void JbdBms::loop() {
- 
+
 }
 
 void JbdBms::update() {

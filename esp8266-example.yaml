@@ -171,38 +171,6 @@ sensor:
       name: "${name} bms0 cell voltage 15"
     cell_voltage_16:
       name: "${name} bms0 cell voltage 16"
-    cell_voltage_17:
-      name: "${name} bms0 cell voltage 17"
-    cell_voltage_18:
-      name: "${name} bms0 cell voltage 18"
-    cell_voltage_19:
-      name: "${name} bms0 cell voltage 19"
-    cell_voltage_20:
-      name: "${name} bms0 cell voltage 20"
-    cell_voltage_21:
-      name: "${name} bms0 cell voltage 21"
-    cell_voltage_22:
-      name: "${name} bms0 cell voltage 22"
-    cell_voltage_23:
-      name: "${name} bms0 cell voltage 23"
-    cell_voltage_24:
-      name: "${name} bms0 cell voltage 24"
-    cell_voltage_25:
-      name: "${name} bms0 cell voltage 25"
-    cell_voltage_26:
-      name: "${name} bms0 cell voltage 26"
-    cell_voltage_27:
-      name: "${name} bms0 cell voltage 27"
-    cell_voltage_28:
-      name: "${name} bms0 cell voltage 28"
-    cell_voltage_29:
-      name: "${name} bms0 cell voltage 29"
-    cell_voltage_30:
-      name: "${name} bms0 cell voltage 30"
-    cell_voltage_31:
-      name: "${name} bms0 cell voltage 31"
-    cell_voltage_32:
-      name: "${name} bms0 cell voltage 32"
     operation_status_bitmask:
       name: "${name} bms0 operation status bitmask"
     errors_bitmask:
@@ -293,38 +261,6 @@ sensor:
       name: "${name} bms1 cell voltage 15"
     cell_voltage_16:
       name: "${name} bms1 cell voltage 16"
-    cell_voltage_17:
-      name: "${name} bms1 cell voltage 17"
-    cell_voltage_18:
-      name: "${name} bms1 cell voltage 18"
-    cell_voltage_19:
-      name: "${name} bms1 cell voltage 19"
-    cell_voltage_20:
-      name: "${name} bms1 cell voltage 20"
-    cell_voltage_21:
-      name: "${name} bms1 cell voltage 21"
-    cell_voltage_22:
-      name: "${name} bms1 cell voltage 22"
-    cell_voltage_23:
-      name: "${name} bms1 cell voltage 23"
-    cell_voltage_24:
-      name: "${name} bms1 cell voltage 24"
-    cell_voltage_25:
-      name: "${name} bms1 cell voltage 25"
-    cell_voltage_26:
-      name: "${name} bms1 cell voltage 26"
-    cell_voltage_27:
-      name: "${name} bms1 cell voltage 27"
-    cell_voltage_28:
-      name: "${name} bms1 cell voltage 28"
-    cell_voltage_29:
-      name: "${name} bms1 cell voltage 29"
-    cell_voltage_30:
-      name: "${name} bms1 cell voltage 30"
-    cell_voltage_31:
-      name: "${name} bms1 cell voltage 31"
-    cell_voltage_32:
-      name: "${name} bms1 cell voltage 32"
     operation_status_bitmask:
       name: "${name} bms1 operation status bitmask"
     errors_bitmask:
@@ -415,38 +351,6 @@ sensor:
       name: "${name} bms2 cell voltage 15"
     cell_voltage_16:
       name: "${name} bms2 cell voltage 16"
-    cell_voltage_17:
-      name: "${name} bms2 cell voltage 17"
-    cell_voltage_18:
-      name: "${name} bms2 cell voltage 18"
-    cell_voltage_19:
-      name: "${name} bms2 cell voltage 19"
-    cell_voltage_20:
-      name: "${name} bms2 cell voltage 20"
-    cell_voltage_21:
-      name: "${name} bms2 cell voltage 21"
-    cell_voltage_22:
-      name: "${name} bms2 cell voltage 22"
-    cell_voltage_23:
-      name: "${name} bms2 cell voltage 23"
-    cell_voltage_24:
-      name: "${name} bms2 cell voltage 24"
-    cell_voltage_25:
-      name: "${name} bms2 cell voltage 25"
-    cell_voltage_26:
-      name: "${name} bms2 cell voltage 26"
-    cell_voltage_27:
-      name: "${name} bms2 cell voltage 27"
-    cell_voltage_28:
-      name: "${name} bms2 cell voltage 28"
-    cell_voltage_29:
-      name: "${name} bms2 cell voltage 29"
-    cell_voltage_30:
-      name: "${name} bms2 cell voltage 30"
-    cell_voltage_31:
-      name: "${name} bms2 cell voltage 31"
-    cell_voltage_32:
-      name: "${name} bms2 cell voltage 32"
     operation_status_bitmask:
       name: "${name} bms2 operation status bitmask"
     errors_bitmask:
