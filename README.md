@@ -62,7 +62,7 @@ esphome run esp32-example.yaml
 ```
 
 ## Example response all sensors enabled
-
+```bash
 [19:37:33][I][jbd_bms:246]: Hardware info frame (37 bytes) received Modbus Addres 0
 [19:37:33][D][jbd_bms:255]:   Device model: 
 [19:37:33][D][sensor:094]: 'jbd-bms bms0 total voltage': Sending state 0.00000 V with 2 decimals of accuracy
@@ -93,7 +93,8 @@ esphome run esp32-example.yaml
 [19:37:34][D][uart_debug:114]: >>> DD:01:A5:03:00:FF:57:77:DD:01:A5:04:00:FF:56:77
 [19:37:34][D][uart_debug:114]: >>> DD:02:A5:03:00:FF:56:77:DD:02:A5:04:00:FF:55:77
 [19:37:35][D][uart_debug:114]: >>> DD:00:A5:03:00:FF:58:77:DD:00:A5:04:00:FF:57:77
- 
+```
+
 ## Protocol
 
 See [ https://github.com/smaksimowicz/esphome-jbd-bms/blob/main/docs/Communication%20protocol-QM-UPS1601.pdf ]
