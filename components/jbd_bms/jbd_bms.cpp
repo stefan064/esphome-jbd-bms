@@ -154,16 +154,17 @@ bool JbdBms::parse_jbd_bms_byte_(uint8_t byte) {
     return true;
 
   uint8_t function = raw[2];
-  uint16_t computed_crc = chksum_(raw + 3, data_len + 2);
+  uint16_t computed_crc = chksum_(raw + 2, data_len + 3);
   uint16_t remote_crc = uint16_t(raw[frame_len - 3]) << 8 | (uint16_t(raw[frame_len - 2]) << 0);
   if (computed_crc != remote_crc) {
     ESP_LOGW(TAG, "CRC check failed! 0x%04X != 0x%04X", computed_crc, remote_crc);
+    ESP_LOGW(TAG, "RX frame %s", format_hex_pretty(raw, frame_len).c_str());
     return false;
   }
 
   ESP_LOGVV(TAG, "RX <- %s", format_hex_pretty(raw, at + 1).c_str());
 
-  std::vector<uint8_t> data(this->rx_buffer_.begin() + 5, this->rx_buffer_.begin() + frame_len - 5);
+  std::vector<uint8_t> data(this->rx_buffer_.begin() + 5, this->rx_buffer_.begin() +5+data_len );
 
   this->on_jbd_bms_data_(function, data);
 
@@ -243,7 +244,13 @@ void JbdBms::on_hardware_info_data_(const std::vector<uint8_t> &data) {
   };
 
   ESP_LOGI(TAG, "Hardware info frame (%d bytes) received Modbus Addres %d", data.size() , this->modbus_id_);
+  if (data.size() == 0 ) {
+    ESP_LOGW(TAG, "Skipping hardware info frame because of invalid length: %d", data.size());
+    return;
+  }
+
   ESP_LOGVV(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
+ 
 
   ESP_LOGD(TAG, "  Device model: %s", this->device_model_.c_str());
 
