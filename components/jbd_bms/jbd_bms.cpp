@@ -502,13 +502,14 @@ void JbdBms::send_command_(uint8_t action, uint8_t function) {
   frame[2] = action;
   frame[3] = function;
   frame[4] = data_len;
-  auto crc = chksum_(frame + 3, data_len + 2);
+  auto crc = chksum_(frame + 1, data_len + 4);
   frame[5] = crc >> 8;
   frame[6] = crc >> 0;
   frame[7] = JBD_PKT_END;
 
   this->write_array(frame, 8);
   this->flush();
+  
 }
 
 std::string JbdBms::error_bits_to_string_(const uint16_t mask) {
