@@ -154,7 +154,7 @@ bool JbdBms::parse_jbd_bms_byte_(uint8_t byte) {
     return true;
 
   uint8_t function = raw[2];
-  uint16_t computed_crc = chksum_(raw + 2, data_len + 3);
+  uint16_t computed_crc = chksum_(raw + 1, data_len + 4);
   uint16_t remote_crc = uint16_t(raw[frame_len - 3]) << 8 | (uint16_t(raw[frame_len - 2]) << 0);
   if (computed_crc != remote_crc) {
     ESP_LOGW(TAG, "CRC check failed! 0x%04X != 0x%04X", computed_crc, remote_crc);
