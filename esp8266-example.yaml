@@ -1,6 +1,6 @@
 substitutions:
-  name: jbd-bms-uart
-  device_description: "Monitor and control a Xiaoxiang Battery Management System (JBD-BMS) via UART"
+  name: jbd-bms
+  device_description: "Monitor and control a Xiaoxiang Battery Management System (JBD-BMS UP) via RS485"
   external_components_source: github://smaksimowicz/esphome-jbd-bms@main
   tx_pin: GPIO4
   rx_pin: GPIO5
@@ -10,8 +10,8 @@ esphome:
   name: ${name}
   comment: ${device_description}
   project:
-    name: "syssi.esphome-jbd-bms"
-    version: 1.4.0
+    name: "smaksimowicz.esphome-jbd-bms"
+    version: 1.0.0
 
 esp8266:
   board: d1_mini
@@ -27,7 +27,7 @@ wifi:
 ota:
 
 logger:
-  level: DEBUG
+  level: ERROR
 
 # If you use Home Assistant please remove this `mqtt` section and uncomment the `api` component!
 # The native API has many advantages over MQTT: https://esphome.io/components/api.html#advantages-over-mqtt

@@ -1,6 +1,6 @@
 substitutions:
   name: jbd-bms
-  device_description: "Monitor and control a Xiaoxiang Battery Management System (JBD-BMS) via UART"
+  device_description: "Monitor and control a Xiaoxiang Battery Management System (JBD-BMS UP) via RS485"
   external_components_source: github://smaksimowicz/esphome-jbd-bms@main
   tx_pin: GPIO17
   rx_pin: GPIO16
@@ -10,8 +10,8 @@ esphome:
   name: ${name}
   comment: ${device_description}
   project:
-    name: "syssi.esphome-jbd-bms"
-    version: 1.4.0
+    name: "smaksimowicz.esphome-jbd-bms"
+    version: 1.0.0
 
 esp32:
   board: wemos_d1_mini32

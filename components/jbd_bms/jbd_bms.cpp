@@ -440,23 +440,6 @@ void JbdBms::dump_config() {  // NOLINT(google-readability-function-size,readabi
   LOG_SENSOR("", "Cell Voltage 14", this->cells_[13].cell_voltage_sensor_);
   LOG_SENSOR("", "Cell Voltage 15", this->cells_[14].cell_voltage_sensor_);
   LOG_SENSOR("", "Cell Voltage 16", this->cells_[15].cell_voltage_sensor_);
-  LOG_SENSOR("", "Cell Voltage 17", this->cells_[16].cell_voltage_sensor_);
-  LOG_SENSOR("", "Cell Voltage 18", this->cells_[17].cell_voltage_sensor_);
-  LOG_SENSOR("", "Cell Voltage 19", this->cells_[18].cell_voltage_sensor_);
-  LOG_SENSOR("", "Cell Voltage 20", this->cells_[19].cell_voltage_sensor_);
-  LOG_SENSOR("", "Cell Voltage 21", this->cells_[20].cell_voltage_sensor_);
-  LOG_SENSOR("", "Cell Voltage 22", this->cells_[21].cell_voltage_sensor_);
-  LOG_SENSOR("", "Cell Voltage 23", this->cells_[22].cell_voltage_sensor_);
-  LOG_SENSOR("", "Cell Voltage 24", this->cells_[23].cell_voltage_sensor_);
-  LOG_SENSOR("", "Cell Voltage 25", this->cells_[24].cell_voltage_sensor_);
-  LOG_SENSOR("", "Cell Voltage 26", this->cells_[25].cell_voltage_sensor_);
-  LOG_SENSOR("", "Cell Voltage 27", this->cells_[26].cell_voltage_sensor_);
-  LOG_SENSOR("", "Cell Voltage 28", this->cells_[27].cell_voltage_sensor_);
-  LOG_SENSOR("", "Cell Voltage 29", this->cells_[28].cell_voltage_sensor_);
-  LOG_SENSOR("", "Cell Voltage 30", this->cells_[29].cell_voltage_sensor_);
-  LOG_SENSOR("", "Cell Voltage 31", this->cells_[30].cell_voltage_sensor_);
-  LOG_SENSOR("", "Cell Voltage 32", this->cells_[31].cell_voltage_sensor_);
-
   LOG_TEXT_SENSOR("", "Operation status", this->operation_status_text_sensor_);
   LOG_TEXT_SENSOR("", "Errors", this->errors_text_sensor_);
   LOG_TEXT_SENSOR("", "Alarms", this->alarms_text_sensor_);
