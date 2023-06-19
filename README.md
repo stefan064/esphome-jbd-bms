@@ -18,16 +18,14 @@ Fork will support parallel functionality of JBD-UP16S010. Reading all BMS data w
 ## Schematics
 
 ```
-                RS485-TTL
+                RS485-TTL (3.3V)
 ┌──────────┐                ┌─────────┐
-│          │<----- RX ----->│         │
-│ JBD-BMS  │<----- TX ----->│ ESP32/  │
-│          │<----- GND ---->│ ESP8266 │<-- 3.3V
-│          │                │         │<-- GND
+│         1│<----- B- ----->│         │
+│ JBD-BMS 2│<----- A+------>│ ESP32/  │
+│  RS485  3│<----- GND ---->│ ESP8266 │<-- 3.3V
+│   RJ45   │                │         │<-- GND
 └──────────┘                └─────────┘
- 
 
-Connector 4 Pin, JST PA 2.0mm pitch
 
 ## Installation
 
@@ -65,6 +63,36 @@ esphome run esp32-example.yaml
 
 ## Example response all sensors enabled
 
+[19:37:33][I][jbd_bms:246]: Hardware info frame (37 bytes) received Modbus Addres 0
+[19:37:33][D][jbd_bms:255]:   Device model: 
+[19:37:33][D][sensor:094]: 'jbd-bms bms0 total voltage': Sending state 0.00000 V with 2 decimals of accuracy
+[19:37:33][D][sensor:094]: 'jbd-bms bms0 current': Sending state 0.00000 A with 1 decimals of accuracy
+[19:37:33][D][sensor:094]: 'jbd-bms bms0 power': Sending state 0.00000 W with 1 decimals of accuracy
+[19:37:33][D][sensor:094]: 'jbd-bms bms0 charging power': Sending state 0.00000 W with 2 decimals of accuracy
+[19:37:33][D][sensor:094]: 'jbd-bms bms0 discharging power': Sending state 0.00000 W with 2 decimals of accuracy
+[19:37:33][D][sensor:094]: 'jbd-bms bms0 capacity remaining': Sending state 0.00000 Ah with 2 decimals of accuracy
+[19:37:33][D][sensor:094]: 'jbd-bms bms0 nominal capacity': Sending state 200.00000 Ah with 2 decimals of accuracy
+[19:37:33][D][sensor:094]: 'jbd-bms bms0 charging cycles': Sending state 0.00000  with 0 decimals of accuracy
+[19:37:33][D][jbd_bms:282]:   Date of manufacture: 2023.5.24
+[19:37:33][D][sensor:094]: 'jbd-bms bms0 balancer status bitmask': Sending state 0.00000  with 0 decimals of accuracy
+[19:37:33][D][sensor:094]: 'jbd-bms bms0 errors bitmask': Sending state 10.00000  with 0 decimals of accuracy
+[19:37:33][D][text_sensor:064]: 'jbd-bms bms0 errors': Sending state 'Cell undervoltage;Pack undervoltage'
+[19:37:33][D][sensor:094]: 'jbd-bms bms0 software version': Sending state 2.30000  with 1 decimals of accuracy
+[19:37:33][D][sensor:094]: 'jbd-bms bms0 state of charge': Sending state 0.00000 % with 0 decimals of accuracy
+[19:37:33][D][sensor:094]: 'jbd-bms bms0 operation status bitmask': Sending state 0.00000  with 0 decimals of accuracy
+[19:37:33][D][sensor:094]: 'jbd-bms bms0 battery strings': Sending state 16.00000  with 0 decimals of accuracy
+[19:37:33][D][sensor:094]: 'jbd-bms bms0 alarm bitmask': Sending state 16384.00000  with 0 decimals of accuracy
+[19:37:33][D][text_sensor:064]: 'jbd-bms bms0 alarms': Sending state 'Low capacity alarms'
+[19:37:33][D][sensor:094]: 'jbd-bms bms0 temperature ambient': Sending state 27.50000 °C with 1 decimals of accuracy
+[19:37:33][D][sensor:094]: 'jbd-bms bms0 temperature fet': Sending state 26.80000 °C with 1 decimals of accuracy
+[19:37:33][D][sensor:094]: 'jbd-bms bms0 temperature 1': Sending state 150.00000 °C with 1 decimals of accuracy
+[19:37:33][D][sensor:094]: 'jbd-bms bms0 temperature 2': Sending state 150.00000 °C with 1 decimals of accuracy
+[19:37:33][D][sensor:094]: 'jbd-bms bms0 temperature 3': Sending state 150.00000 °C with 1 decimals of accuracy
+[19:37:33][D][sensor:094]: 'jbd-bms bms0 temperature 4': Sending state -30.00000 °C with 1 decimals of accuracy
+[19:37:33][D][uart_debug:114]: <<< DD:00:03:00:25:00:00:00:00:00:00:4E:20:00:00:2E:B8:00:00:00:00:00:0A:23:00:00:10:40:00:0B:BE:0B:B7:04:10:87:10:87:10:87:09:7F:FA:2B:77
+[19:37:34][D][uart_debug:114]: >>> DD:01:A5:03:00:FF:57:77:DD:01:A5:04:00:FF:56:77
+[19:37:34][D][uart_debug:114]: >>> DD:02:A5:03:00:FF:56:77:DD:02:A5:04:00:FF:55:77
+[19:37:35][D][uart_debug:114]: >>> DD:00:A5:03:00:FF:58:77:DD:00:A5:04:00:FF:57:77
  
 ## Protocol
 
@@ -75,6 +103,8 @@ See [ https://github.com/smaksimowicz/esphome-jbd-bms/blob/main/docs/Communicati
 None.
 
 ## Goodies
+
+Support for external active balancer in HA automation with enable button for instance models like: QUCC-QP-1710A. 
 
 ## Debugging
 
