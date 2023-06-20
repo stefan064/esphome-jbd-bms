@@ -6,10 +6,10 @@
 ![GitHub watchers](https://img.shields.io/github/watchers/syssi/esphome-jbd-bms)
 [!["Buy Me A Coffee"](https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg)](https://www.buymeacoffee.com/syssi)
 
-ESPHome component to monitor and control a JBD-BMS via UART-TTL 
+ESPHome component to monitor and control a JBD-UP16S010 via RS485-TTL 
 
-WORK IN PROGRESS
-Fork will support parallel functionality of JBD-UP16S010. Reading all BMS data will be done by one ESP32 interface. 
+Fork supports parallel functionality of JBD-UP16S010. 
+Reading all packs data will is done by one ESP32/ESP8266 interface. 
 
 ## Supported devices
 
