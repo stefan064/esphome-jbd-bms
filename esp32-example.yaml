@@ -42,7 +42,7 @@ logger:
 
 api:
  encryption:
-    key: "dx49+4zoABIDsou3NyF4sAv0KPiTcNrxKZspKljh2Fo="
+    key: "0BQx4CfwdfLngyNtibfTIcwlP4TkN69RfOlSEqrtXfs="
 
 uart:
   - id: uart_0

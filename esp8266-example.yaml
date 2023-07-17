@@ -31,13 +31,15 @@ logger:
 
 # If you use Home Assistant please remove this `mqtt` section and uncomment the `api` component!
 # The native API has many advantages over MQTT: https://esphome.io/components/api.html#advantages-over-mqtt
-mqtt:
-  broker: !secret mqtt_host
-  username: !secret mqtt_username
-  password: !secret mqtt_password
-  id: mqtt_client
+# mqtt:
+  # broker: !secret mqtt_host
+  # username: !secret mqtt_username
+  # password: !secret mqtt_password
+  # id: mqtt_client
 
-# api:
+api:
+  encryption:
+    key: "0BQx4CfwdfLngyNtibfTIcwlP4TkN69RfOlSEqrtXfs="
 
 uart:
   - id: uart_0
@@ -397,19 +399,19 @@ text_sensor:
 switch:
   - platform: gpio
     pin:
-      number: GPIO19
+      number: 19
       inverted: true
     name: "Bms0 enable external balancer"
     id: bms0_external_balancer_switch
   - platform: gpio
     pin:
-      number: GPIO18
+      number: 18
       inverted: true
     name: "Bms1 enable external balancer" 
     id: bms1_external_balancer_switch
   - platform: gpio
     pin: 
-      number: GPIO5
+      number: 5
       inverted: true
     name: "Bms2 enable external balancer"
     id: bms2_external_balancer_switch
