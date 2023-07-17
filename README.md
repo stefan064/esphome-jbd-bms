@@ -9,7 +9,7 @@
 ESPHome component to monitor and control a JBD-UP16S010 via RS485-TTL 
 
 Fork supports parallel functionality of JBD-UP16S010. 
-Reading all packs data will is done by one ESP32/ESP8266 interface. 
+Reading all packs data is done by one ESP32/ESP8266 interface. 
 
 ## Supported devices
 
