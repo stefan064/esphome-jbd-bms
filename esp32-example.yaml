@@ -373,6 +373,7 @@ sensor:
   
   - platform: template
     name:  "${name} bms0 positive power"
+    unit_of_measurement: "W"
     lambda: |-
       if (id(jbd_bms_bms0_power).state > 0) {
         return id(jbd_bms_bms0_power).state;
@@ -382,7 +383,7 @@ sensor:
     update_interval: 2s
   - platform: template
     name:  "${name} bms1 positive power"
-    id: jbd_bms_bms1_positive_power
+    unit_of_measurement: "W"
     lambda: |-
       if (id(jbd_bms_bms1_power).state > 0) {
         return id(jbd_bms_bms1_power).state;
@@ -391,8 +392,8 @@ sensor:
       }
     update_interval: 2s
   - platform: template
-    name:  "${name} bms2 positive power" 
-    id: jbd_bms_bms2_positive_power
+    name:  "${name} bms2 positive power"
+    unit_of_measurement: "W" 
     lambda: |-
       if (id(jbd_bms_bms2_power).state > 0) {
         return id(jbd_bms_bms2_power).state;
