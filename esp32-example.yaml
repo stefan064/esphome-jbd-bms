@@ -96,6 +96,7 @@ binary_sensor:
     online_status:
       name: "${name} bms2 online status"
 sensor:
+
   - platform: jbd_bms
     jbd_bms_id: bms0
     battery_strings:
@@ -104,6 +105,7 @@ sensor:
       name: "${name} bms0 current"
     power:
       name: "${name} bms0 power"
+      id: jbd_bms_bms0_power
     charging_power:
       name: "${name} bms0 charging power"
     discharging_power:
@@ -194,6 +196,7 @@ sensor:
       name: "${name} bms1 current"
     power:
       name: "${name} bms1 power"
+      id: jbd_bms_bms1_power
     charging_power:
       name: "${name} bms1 charging power"
     discharging_power:
@@ -284,6 +287,7 @@ sensor:
       name: "${name} bms2 current"
     power:
       name: "${name} bms2 power"
+      id: jbd_bms_bms2_power
     charging_power:
       name: "${name} bms2 charging power"
     discharging_power:
@@ -366,6 +370,36 @@ sensor:
       name: "${name} bms2 balancer status bitmask"
     software_version:
       name: "${name} bms2 software version"
+  
+  - platform: template
+    name:  "${name} bms0 positive power"
+    lambda: |-
+      if (id(jbd_bms_bms0_power).state > 0) {
+        return id(jbd_bms_bms0_power).state;
+      } else {
+        return -id(jbd_bms_bms0_power).state;
+      }
+    update_interval: 2s
+  - platform: template
+    name:  "${name} bms1 positive power"
+    id: jbd_bms_bms1_positive_power
+    lambda: |-
+      if (id(jbd_bms_bms1_power).state > 0) {
+        return id(jbd_bms_bms1_power).state;
+      } else {
+        return -id(jbd_bms_bms1_power).state;
+      }
+    update_interval: 2s
+  - platform: template
+    name:  "${name} bms2 positive power" 
+    id: jbd_bms_bms2_positive_power
+    lambda: |-
+      if (id(jbd_bms_bms2_power).state > 0) {
+        return id(jbd_bms_bms2_power).state;
+      } else {
+        return -id(jbd_bms_bms2_power).state;
+      }
+    update_interval: 2s
 
 text_sensor:
   - platform: jbd_bms
@@ -443,4 +477,5 @@ switch:
     balancer:
       name: "${name} bms2 balancer"
 
+      
       
