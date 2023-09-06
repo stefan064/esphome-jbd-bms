@@ -106,6 +106,7 @@ None.
 ## Goodies
 
 Support for external active balancer in HA automation with enable button for instance models like: QUCC-QP-1710A. 
+
 HA dasboard example (dashboard.yaml)
 ![image](https://github.com/smaksimowicz/esphome-jbd-bms/assets/85828532/3351948a-4dac-47af-b00e-b89efbf73331)
 
