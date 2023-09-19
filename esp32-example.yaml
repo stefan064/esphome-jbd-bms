@@ -23,8 +23,8 @@ external_components:
     refresh: 0s
 
 wifi:
-  ssid: "Mak"
-  password: "0123456789"
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
 
 ota:
   password: "a00db62ae10969229cdc443b672aaea4"
