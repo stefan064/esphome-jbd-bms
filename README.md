@@ -11,9 +11,9 @@ ESPHome component to monitor and control a JBD-UP16S010 via RS485-TTL
 Fork supports parallel functionality of JBD-UP16S010 via a single RS485 bus.
 Reading all packs data is done by one ESP32/ESP8266 interface.
 
-These BMS modules use a variant of the JBD protocol that makes 
+These particular BMS models use a variant of the JBD protocol that is not compatible with tools implementing the 'regular' JBD protocol.
 
-# This fork adds flow_control_pin to support RS485 transceivers requiring it, e.g. Dingtian 4-Ch relay module DT-R004.
+**_This fork adds flow_control_pin to support RS485 transceivers requiring it, e.g. Dingtian 4-Ch relay module DT-R004, or MAX485._**
 
 Based on the work of https://github.com/smaksimowicz/esphome-jbd-bms
 and https://github.com/syssi/esphome-jbd-bms
@@ -45,7 +45,7 @@ and https://github.com/syssi/esphome-jbd-bms
 │  RS485  3│<---|
 │   RJ45   │ 
 └──────────┘ 
-
+```
 NOTE: Use only the single RS485 connector closest to the LEDs, not the pair of "parallel communication ports" as they are not intended for this purpose and the BMS does not respond when using those.
 
 ## Installation
@@ -118,7 +118,7 @@ esphome run esp32-example.yaml
 
 ## Protocol
 
-See [ https://github.com/smaksimowicz/esphome-jbd-bms/blob/main/docs/Communication%20protocol-QM-UPS1601.pdf ]
+See [ https://github.com/stefan064/esphome-jbd-bms/blob/main/docs/Communication%20protocol-QM-UPS1601.pdf ]
 
 ## Known issues
 
