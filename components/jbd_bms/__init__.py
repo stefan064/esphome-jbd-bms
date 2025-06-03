@@ -19,6 +19,12 @@ CONF_MODBUS_ID = "modbus_id"
 jbd_bms_ns = cg.esphome_ns.namespace("jbd_bms")
 JbdBms = jbd_bms_ns.class_("JbdBms", cg.PollingComponent, uart.UARTDevice)
 
+JBD_BMS_COMPONENT_SCHEMA = cv.Schema(
+    {
+        cv.GenerateID(CONF_JBD_BMS_ID): cv.use_id(JbdBms),
+    }
+)
+
 CONFIG_SCHEMA = (
     cv.Schema(
         {
