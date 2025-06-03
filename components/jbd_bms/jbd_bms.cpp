@@ -65,6 +65,10 @@ static const char *const ALARMS[ALARMS_SIZE] = {
 };
 
 void JbdBms::setup() { 
+  if (this->flow_control_pin_ != nullptr) {
+    this->flow_control_pin_->setup();
+  }
+
   this->send_command_(JBD_CMD_READ, JBD_CMD_HWINFO); 
 }
 
@@ -391,6 +395,7 @@ void JbdBms::dump_config() {  // NOLINT(google-readability-function-size,readabi
   ESP_LOGCONFIG(TAG, "JbdBms:");
   ESP_LOGCONFIG(TAG, "  RX timeout: %d ms", this->rx_timeout_);
   ESP_LOGCONFIG(TAG, "  Fake traffic enabled: %s", YESNO(this->enable_fake_traffic_));
+  LOG_PIN("  Flow Control Pin: ", this->flow_control_pin_);
 
   LOG_BINARY_SENSOR("", "Balancing", this->balancing_binary_sensor_);
   LOG_BINARY_SENSOR("", "Charging", this->charging_binary_sensor_);
@@ -492,8 +497,14 @@ void JbdBms::send_command_(uint8_t action, uint8_t function) {
   frame[6] = crc >> 0;
   frame[7] = JBD_PKT_END;
 
+  if (this->flow_control_pin_ != nullptr)
+    this->flow_control_pin_->digital_write(true);
+
   this->write_array(frame, 8);
   this->flush();
+
+  if (this->flow_control_pin_ != nullptr)
+    this->flow_control_pin_->digital_write(false);
   
 }
 

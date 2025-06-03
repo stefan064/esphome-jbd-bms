@@ -8,31 +8,52 @@
 
 ESPHome component to monitor and control a JBD-UP16S010 via RS485-TTL 
 
-Fork supports parallel functionality of JBD-UP16S010. 
-Reading all packs data is done by one ESP32/ESP8266 interface. 
+Fork supports parallel functionality of JBD-UP16S010 via a single RS485 bus.
+Reading all packs data is done by one ESP32/ESP8266 interface.
+
+These BMS modules use a variant of the JBD protocol that makes 
+
+# This fork adds flow_control_pin to support RS485 transceivers requiring it, e.g. Dingtian 4-Ch relay module DT-R004.
+
+Based on the work of https://github.com/smaksimowicz/esphome-jbd-bms
+and https://github.com/syssi/esphome-jbd-bms
 
 ## Supported devices
 
 * JBD-UP16S010-L16S-200A-200A-B-U-R-C-A03 
+* JBD-UP16S010-L16S-100A-100A-B-U-R-C-A05
 
 ## Schematics
 
 ```
                 RS485-TTL (3.3V)
 ┌──────────┐                ┌─────────┐
-│         1│<----- B- ----->│         │
-│ JBD-BMS 2│<----- A+------>│ ESP32/  │
-│  RS485  3│<----- GND ---->│ ESP8266 │<-- 3.3V
-│   RJ45   │                │         │<-- GND
-└──────────┘                └─────────┘
+│   #1    1│<-+--- B- ----->│         │
+│ JBD-BMS 2│<-|+-- A+------>│ ESP32/  │
+│  RS485  3│<-||+- GND ---->│ ESP8266 │<-- 3.3V
+│   RJ45   │  |||           │         │<-- GND
+└──────────┘  |||           └─────────┘
+┌──────────┐  |||
+│   #2    1│<-+||
+│ JBD-BMS 2│<-|+|
+│  RS485  3│<-||+
+│   RJ45   │  |||
+└──────────┘  |||
+┌──────────┐  |||
+│ #3(...) 1│<-|||
+│ JBD-BMS 2│<--||
+│  RS485  3│<---|
+│   RJ45   │ 
+└──────────┘ 
 
+NOTE: Use only the single RS485 connector closest to the LEDs, not the pair of "parallel communication ports" as they are not intended for this purpose and the BMS does not respond when using those.
 
 ## Installation
 
 You can install this component with [ESPHome external components feature](https://esphome.io/components/external_components.html) like this:
 ```yaml
 external_components:
-  - source: github://smaksimowicz/esphome-jbd-bms@main
+  - source: github://stefan064/esphome-jbd-bms@main
 ```
 
 or just use the `esp32-example.yaml` as proof of concept:
@@ -42,7 +63,7 @@ or just use the `esp32-example.yaml` as proof of concept:
 pip3 install esphome
 
 # Clone this external component
-git clone https://github.com/smaksimowicz/esphome-jbd-bms.git
+git clone https://github.com/stefan064/esphome-jbd-bms.git
 cd esphome-jbd-bms
 
 # Create a secrets.yaml containing some setup specific secrets
