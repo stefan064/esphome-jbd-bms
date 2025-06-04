@@ -1,4 +1,4 @@
-# esphome-jbd-bms
+# esphome-jbd-bms - variant for JBD-UP16S010 with multiple BMS support over RS485
 
 ![GitHub actions](https://github.com/syssi/esphome-jbd-bms/actions/workflows/ci.yaml/badge.svg)
 ![GitHub stars](https://img.shields.io/github/stars/syssi/esphome-jbd-bms)
