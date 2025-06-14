@@ -24,6 +24,8 @@ static const uint8_t JBD_CMD_BALANCER = 0xE2;  // Enable/disable balancer
 static const uint8_t JBD_MOS_CHARGE = 0x01;
 static const uint8_t JBD_MOS_DISCHARGE = 0x02;
 
+static const uint8_t JBD_STATUS_OK = 0x00;
+
 static const uint8_t ERRORS_SIZE = 16;
 static const char *const ERRORS[ERRORS_SIZE] = {
     "Cell overvoltage",               // 0x00
@@ -149,8 +151,6 @@ bool JbdBms::parse_jbd_bms_byte_(uint8_t byte) {
   if (at < 4)
     return true;
 
-  if(raw[1]!= this->modbus_id_) 
-    return true;
 
   uint16_t data_len = raw[4];
   uint16_t frame_len = 5 + data_len + 3;
@@ -158,6 +158,12 @@ bool JbdBms::parse_jbd_bms_byte_(uint8_t byte) {
   // Byte 0...4+data_len+3
   if (at < frame_len - 1)
     return true;
+
+  if(raw[1] != this->modbus_id_) {
+    ESP_LOGW(TAG, "Incorrect modbus ID: 0x%02X", raw[1]);
+    // return false to reset buffer
+    return false;  
+  }
 
   uint8_t function = raw[2];
   uint16_t computed_crc = chksum_(raw + 1, data_len + 4);
@@ -169,6 +175,11 @@ bool JbdBms::parse_jbd_bms_byte_(uint8_t byte) {
   }
 
   ESP_LOGVV(TAG, "RX <- %s", format_hex_pretty(raw, at + 1).c_str());
+  if(raw[3] != JBD_STATUS_OK) {
+    ESP_LOGW(TAG, "Response has error status: 0x%02X", raw[3]);
+    ESP_LOGW(TAG, "RX frame %s", format_hex_pretty(raw, frame_len).c_str());
+    return false;      
+  }
 
   std::vector<uint8_t> data(this->rx_buffer_.begin() + 5, this->rx_buffer_.begin() +5+data_len );
 
@@ -250,7 +261,7 @@ void JbdBms::on_hardware_info_data_(const std::vector<uint8_t> &data) {
   };
 
   ESP_LOGI(TAG, "Hardware info frame (%d bytes) received Modbus Addres %d", data.size() , this->modbus_id_);
-  if (data.size() == 0 ) {
+  if (data.size() < 29 ) { //variable length based on num of temp sensors (typically 4), this assumes min length with none
     ESP_LOGW(TAG, "Skipping hardware info frame because of invalid length: %d", data.size());
     return;
   }
