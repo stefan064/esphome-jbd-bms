@@ -76,18 +76,20 @@ void JbdBms::setup() {
 
 void JbdBms::proces_response_(void)
 {
-  
-  for(;;) {
+  this->last_byte_ = millis();
+  bool has_response = false;
+  for(;;) { //exits only via timeout - even after successfully receiving a response
     const uint32_t now = millis();
     if (now - this->last_byte_ > this->rx_timeout_) {
       ESP_LOGVV(TAG, "Buffer cleared due to timeout: %s",
                 format_hex_pretty(&this->rx_buffer_.front(), this->rx_buffer_.size()).c_str());
+      if (!has_response) ESP_LOGW(TAG, "No response from cmd 0x%02X on ID %u", this->last_sent_cmd_, this->modbus_id_);
       this->rx_buffer_.clear();
-      this->last_byte_ = now;
       return;
     }
 
     while (this->available()) {
+      has_response = true;
       uint8_t byte;
       this->read_byte(&byte);
       if (this->parse_jbd_bms_byte_(byte)) {
@@ -107,9 +109,14 @@ void JbdBms::loop() {
 
 void JbdBms::update() {
   this->track_online_status_();
-  this->send_command_(JBD_CMD_READ, JBD_CMD_HWINFO);
-  this->proces_response_();
-  this->send_command_(JBD_CMD_READ, JBD_CMD_CELLINFO);
+
+  switch(this->last_sent_cmd_) {
+    case JBD_CMD_HWINFO: this->last_sent_cmd_ = JBD_CMD_CELLINFO; break;
+    default: this->last_sent_cmd_ = JBD_CMD_HWINFO; break;
+  }
+  
+  ESP_LOGV(TAG, "Polling for: 0x%02X on ID %u", this->last_sent_cmd_, this->modbus_id_);
+  this->send_command_(JBD_CMD_READ, this->last_sent_cmd_);
   this->proces_response_();
 
   if (this->enable_fake_traffic_) {
@@ -267,7 +274,7 @@ void JbdBms::on_hardware_info_data_(const std::vector<uint8_t> &data) {
   }
 
   ESP_LOGVV(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
- 
+
 
   ESP_LOGD(TAG, "  Device model: %s", this->device_model_.c_str());
 

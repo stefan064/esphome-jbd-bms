@@ -186,6 +186,7 @@ class JbdBms : public uart::UARTDevice, public PollingComponent {
   bool enable_fake_traffic_;
   uint8_t modbus_id_;
   GPIOPin *flow_control_pin_{nullptr};
+  uint8_t last_sent_cmd_{0};
 
   void on_jbd_bms_data_(const uint8_t &function, const std::vector<uint8_t> &data);
   void on_cell_info_data_(const std::vector<uint8_t> &data);
