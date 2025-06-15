@@ -74,65 +74,76 @@ void JbdBms::setup() {
   this->send_command_(JBD_CMD_READ, JBD_CMD_HWINFO); 
 }
 
-void JbdBms::proces_response_(void)
+bool JbdBms::proces_response_(void)
 {
-  this->last_byte_ = millis();
-  bool has_response = false;
-  for(;;) { //exits only via timeout - even after successfully receiving a response
-    const uint32_t now = millis();
-    if (now - this->last_byte_ > this->rx_timeout_) {
-      ESP_LOGVV(TAG, "Buffer cleared due to timeout: %s",
-                format_hex_pretty(&this->rx_buffer_.front(), this->rx_buffer_.size()).c_str());
-      if (!has_response) ESP_LOGW(TAG, "No response from cmd 0x%02X on ID %u", this->last_sent_cmd_, this->modbus_id_);
-      this->rx_buffer_.clear();
-      return;
-    }
+  const uint32_t now = millis();
+  if (now - this->last_byte_ > this->rx_timeout_) {
+    ESP_LOGVV(TAG, "Buffer cleared due to timeout: %s",
+              format_hex_pretty(&this->rx_buffer_.front(), this->rx_buffer_.size()).c_str());
+    this->rx_buffer_.clear();
+    return true; //exits only via timeout - even after successfully receiving a response
+  }
 
-    while (this->available()) {
-      has_response = true;
-      uint8_t byte;
-      this->read_byte(&byte);
-      if (this->parse_jbd_bms_byte_(byte)) {
-        this->last_byte_ = now;
-      } else {
-        ESP_LOGVV(TAG, "Buffer cleared due to reset: %s",
-                  format_hex_pretty(&this->rx_buffer_.front(), this->rx_buffer_.size()).c_str());
-        this->rx_buffer_.clear();
-      }
+  while (this->available()) {
+    uint8_t byte;
+    this->read_byte(&byte);
+    if (this->parse_jbd_bms_byte_(byte)) {
+      this->last_byte_ = now;
+    } else {
+      ESP_LOGVV(TAG, "Buffer cleared due to reset: %s",
+                format_hex_pretty(&this->rx_buffer_.front(), this->rx_buffer_.size()).c_str());
+      this->rx_buffer_.clear();
     }
   }
+  return false;
 }
 
 void JbdBms::loop() {
+  if (!this->want_update_) return;
 
+  static bool uart_busy = false;
+  static uint8_t uart_used_by_id = 0;
+  if (uart_busy && (uart_used_by_id == this->modbus_id_)) {
+    if (this->proces_response_()) {
+      uart_busy = false;
+      this->want_update_ = false;
+    }
+    return;
+  }
+  if (!uart_busy) {
+    uart_busy = true;
+    uart_used_by_id = this->modbus_id_;
+    
+    this->track_online_status_();
+
+    switch(this->last_sent_cmd_) {
+      case JBD_CMD_HWINFO: this->last_sent_cmd_ = JBD_CMD_CELLINFO; break;
+      default: this->last_sent_cmd_ = JBD_CMD_HWINFO; break;
+    }
+  
+    ESP_LOGV(TAG, "Polling for: 0x%02X on ID %u", this->last_sent_cmd_, this->modbus_id_);
+    this->send_command_(JBD_CMD_READ, this->last_sent_cmd_);
+    this->last_byte_ = millis();
+
+    if (this->enable_fake_traffic_) {
+      // Start: 0xDD modbus_addr 0x03 0x00 0x1B
+      this->on_jbd_bms_data_(JBD_CMD_HWINFO, {0x17,0x00,0x00,0x00,0x02,0xD0,0x03,0xE8,0x00,0x00,0x20,0x78
+        ,0x00,0x00,0x00,0x00,0x00,0x00,0x10,0x48,0x03,0x0F,0x00,0x02,0x0B,
+        0x76,0x0B,0x82,0x04, 0x0B, 0x8D, 0x0B, 0x8D, 0x0B, 0x8D, 0x0B, 0x8D});
+        // End: CRC_HI , CRC_LO,  0x77
+
+      // Start: 0xDD modbus_addr 0x04 0x00 0x1E
+      this->on_jbd_bms_data_(JBD_CMD_CELLINFO, {0x0F , 0x66 , 0x0F , 0x63 , 0x0F , 0x63 , 0x0F , 0x64 , 0x0F , 0x3E , 0x0F , 0x63 , 0x0F , 0x37 
+        , 0x0F , 0x5B , 0x0F , 0x65 , 0x0F , 0x3B , 0x0F , 0x63 , 0x0F , 0x63 , 0x0F , 0x3C , 0x0F , 0x66 , 
+        0x0F , 0x3D});
+        // End: CRC_HI , CRC_LO,  0x77
+
+    }
+  }
 }
 
 void JbdBms::update() {
-  this->track_online_status_();
-
-  switch(this->last_sent_cmd_) {
-    case JBD_CMD_HWINFO: this->last_sent_cmd_ = JBD_CMD_CELLINFO; break;
-    default: this->last_sent_cmd_ = JBD_CMD_HWINFO; break;
-  }
-  
-  ESP_LOGV(TAG, "Polling for: 0x%02X on ID %u", this->last_sent_cmd_, this->modbus_id_);
-  this->send_command_(JBD_CMD_READ, this->last_sent_cmd_);
-  this->proces_response_();
-
-  if (this->enable_fake_traffic_) {
-    // Start: 0xDD modbus_addr 0x03 0x00 0x1B
-    this->on_jbd_bms_data_(JBD_CMD_HWINFO, {0x17,0x00,0x00,0x00,0x02,0xD0,0x03,0xE8,0x00,0x00,0x20,0x78
-                                           ,0x00,0x00,0x00,0x00,0x00,0x00,0x10,0x48,0x03,0x0F,0x00,0x02,0x0B,
-                                            0x76,0x0B,0x82,0x04, 0x0B, 0x8D, 0x0B, 0x8D, 0x0B, 0x8D, 0x0B, 0x8D});
-    // End: CRC_HI , CRC_LO,  0x77
-
-    // Start: 0xDD modbus_addr 0x04 0x00 0x1E
-    this->on_jbd_bms_data_(JBD_CMD_CELLINFO, {0x0F , 0x66 , 0x0F , 0x63 , 0x0F , 0x63 , 0x0F , 0x64 , 0x0F , 0x3E , 0x0F , 0x63 , 0x0F , 0x37 
-                                            , 0x0F , 0x5B , 0x0F , 0x65 , 0x0F , 0x3B , 0x0F , 0x63 , 0x0F , 0x63 , 0x0F , 0x3C , 0x0F , 0x66 , 
-                                              0x0F , 0x3D});
-    // End: CRC_HI , CRC_LO,  0x77
-
-  }
+  this->want_update_ = true;
 }
 
 bool JbdBms::parse_jbd_bms_byte_(uint8_t byte) {
@@ -167,7 +178,7 @@ bool JbdBms::parse_jbd_bms_byte_(uint8_t byte) {
     return true;
 
   if(raw[1] != this->modbus_id_) {
-    ESP_LOGW(TAG, "Incorrect modbus ID: 0x%02X", raw[1]);
+    ESP_LOGW(TAG, "Response from incorrect modbus ID: 0x%02X", raw[1]);
     // return false to reset buffer
     return false;  
   }
@@ -362,6 +373,9 @@ void JbdBms::track_online_status_() {
   if (this->no_response_count_ == MAX_NO_RESPONSE_COUNT) {
     this->publish_device_unavailable_();
     this->no_response_count_++;
+  }
+  if (this->no_response_count_ > 1) {
+    ESP_LOGW(TAG, "No response from ID %u" , this->modbus_id_);
   }
 }
 
